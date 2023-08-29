@@ -8,6 +8,7 @@ import com.betrybe.agrix.ebytr.staff.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,18 @@ public class PersonController {
 
   @PostMapping()
   public ResponseEntity insertPerson(@RequestBody PersonDto personDto) {
+    UserDetails userDetails = personService.loadUserByUsername(personDto.username());
+
+    if (userDetails != null) {
+
+      ResponseDto<Person> response = new ResponseDto<>(
+
+          "Não foi possível cadastrar, nome de usuário já existe!", null);
+
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+    }
+
     Person newPerson = personService.create(personDto.toPerson());
     ResponsePersonDto responsePersonDto = new ResponsePersonDto(newPerson.getId(),
         newPerson.getUsername(), newPerson.getRole());
