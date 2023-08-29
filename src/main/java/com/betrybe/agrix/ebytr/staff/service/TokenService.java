@@ -43,4 +43,20 @@ public class TokenService {
         .plusHours(2)
         .toInstant(ZoneOffset.of("-03:00"));
   }
+
+  public String validateToken(String token) {
+
+    Algorithm algorithm = Algorithm.HMAC256(secret);
+
+    return JWT.require(algorithm)
+
+        .withIssuer("agrix")
+
+        .build()
+
+        .verify(token)
+
+        .getSubject();
+
+  }
 }
